@@ -5,21 +5,92 @@ output:
     keep_md: true
 ---
 
+```{r global, echo = FALSE, results = "hide", message = FALSE }
+library(data.table)
+library(ggplot2)
+library(lubridate)
+```
+
 
 ## Loading and preprocessing the data
 
-
+```{r load_data, results = "hide" }
+unzip("activity.zip")
+activity <- fread("activity.csv", sep = ",", na.strings = "NA")
+activity[, date := as.POSIXct(date)]
+```
 
 ## What is mean total number of steps taken per day?
 
+```{r mean_total_number_histogram, results = "hide" }
+daily_steps <- activity[, list(steps = sum(steps, na.rm = TRUE)), by = date]
 
+ggplot(daily_steps, aes(x = steps)) + 
+  geom_histogram(binwidth = 500, colour="black", fill="white") +
+  geom_vline(aes(xintercept=mean(steps, na.rm=T)),
+             color="red", linetype="dashed", size=1) +
+  geom_vline(aes(xintercept=median(steps, na.rm=T)),
+             color="blue", linetype="dashed", size=1)
+```
+
+```{r mean_total_number}
+mean_total_number <- mean(daily_steps$steps)
+median_total_number <- median(daily_steps$steps)
+```
+
+The mean total number of steps taken per day is `r mean_total_number` and the median is `r median_total_number`.
 
 ## What is the average daily activity pattern?
 
+```{r average_daily_activity_patern }
+interval_steps_mean <- activity[, list(steps_mean = mean(steps, na.rm = TRUE)), by = interval]
+plt <- ggplot( data = interval_steps_mean, aes( interval, steps_mean )) + 
+  geom_line()
+print(plt)
 
+interval_with_max_steps <- interval_steps_mean[,.SD[which.max(steps_mean)]]
+```
+
+The interval with max number of step is `r interval_with_max_steps$interval`.
 
 ## Imputing missing values
 
+```{r number_missing_values }
+missing_steps <- sum(is.na(activity$steps))
+```
+
+There are `r missing_steps` missing values (i.e. intervals without steps).
+
+```{r fill_missing_values, results = "hide" }
+activity_filled <- merge(activity, interval_steps_mean, by = "interval")
+activity_filled[is.na(steps), steps := as.integer(round(steps_mean))]
+daily_steps_filled <- activity_filled[, list(steps = sum(steps, na.rm = TRUE)), by = date]
+
+ggplot(daily_steps_filled, aes(x = steps)) + 
+  geom_histogram(binwidth = 500, colour="black", fill="white") +
+  geom_vline(aes(xintercept=mean(steps, na.rm=T)),
+             color="red", linetype="dashed", size=1) +
+  geom_vline(aes(xintercept=median(steps, na.rm=T)),
+             color="blue", linetype="dashed", size=1)
+```
+
+```{r filled_mean_total_number, results = "hide"}
+mean_total_number_filled <- mean(daily_steps_filled$steps)
+median_total_number_filled <- median(daily_steps_filled$steps)
+```
+
+With empty values replaced by the mean value of empty interval, the total mean and total median values are changed. Before the empty values are replaced, the mean was `r mean_total_number` and median was `r median_total_number`. Once empty variables replaced the mean value is `r mean_total_number_filled` and the median is `r median_total_number_filled`.
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+```{r weekday_pattern, results = "hide" }
+activity[wday(date) %in% c(1,7), weekday := "weekend"]
+activity[wday(date) %in% c(2,3,4,5,6), weekday := "weekday"]
+interval_steps_mean <- activity[, list(steps_mean = mean(steps, na.rm = TRUE)), 
+                                by = .(weekday, interval)]
+
+ggplot( data = interval_steps_mean, aes( interval, steps_mean )) +  
+      facet_grid(.  ~	weekday) + 
+      geom_line()
+```
