@@ -14,6 +14,8 @@ library(lubridate)
 
 ## Loading and preprocessing the data
 
+Data are loaded into an instance of data.table from the activity.zip file which must be in the R current directory.
+
 ```{r load_data, results = "hide" }
 unzip("activity.zip")
 activity <- fread("activity.csv", sep = ",", na.strings = "NA")
@@ -79,7 +81,7 @@ mean_total_number_filled <- mean(daily_steps_filled$steps)
 median_total_number_filled <- median(daily_steps_filled$steps)
 ```
 
-With empty values replaced by the mean value of empty interval, the total mean and total median values are changed. Before the empty values are replaced, the mean was `r mean_total_number` and median was `r median_total_number`. Once empty variables replaced the mean value is `r mean_total_number_filled` and the median is `r median_total_number_filled`.
+With empty values replaced by the mean value of the empty interval, the total mean and total median values are changed. Before the empty values are replaced, the mean was `r mean_total_number` and median was `r median_total_number`. Once empty variables replaced the mean value is `r mean_total_number_filled` and the median is `r median_total_number_filled`.
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
@@ -95,3 +97,10 @@ ggplot( data = interval_steps_mean, aes( interval, steps_mean )) +
       geom_line() +
       ylab("mean value")
 ```
+
+```{r}
+summary(interval_steps_mean[weekday == "weekend", steps_mean])
+summary(interval_steps_mean[weekday == "weekday", steps_mean])
+```
+
+It looks that people walks more in avarage during a weekend than during a regular weekdays.

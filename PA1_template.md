@@ -5,6 +5,8 @@
 
 ## Loading and preprocessing the data
 
+Data are loaded into an instance of data.table from the activity.zip file which must be in the R current directory.
+
 
 ```r
 unzip("activity.zip")
@@ -85,7 +87,7 @@ mean_total_number_filled <- mean(daily_steps_filled$steps)
 median_total_number_filled <- median(daily_steps_filled$steps)
 ```
 
-With empty values replaced by the mean value of empty interval, the total mean and total median values are changed. Before the empty values are replaced, the mean was 9354.2295082 and median was 10395. Once empty variables replaced the mean value is 1.0765639\times 10^{4} and the median is 10762.
+With empty values replaced by the mean value of the empty interval, the total mean and total median values are changed. Before the empty values are replaced, the mean was 9354.2295082 and median was 10395. Once empty variables replaced the mean value is 1.0765639\times 10^{4} and the median is 10762.
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
@@ -104,3 +106,24 @@ ggplot( data = interval_steps_mean, aes( interval, steps_mean )) +
 ```
 
 ![](PA1_template_files/figure-html/weekday_pattern-1.png) 
+
+
+```r
+summary(interval_steps_mean[weekday == "weekend", steps_mean])
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   0.000   1.107  32.040  43.080  75.570 175.000
+```
+
+```r
+summary(interval_steps_mean[weekday == "weekday", steps_mean])
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   0.000   2.218  23.970  35.340  51.870 234.100
+```
+
+It looks that people walks more in avarage during a weekend than during a regular weekdays.
