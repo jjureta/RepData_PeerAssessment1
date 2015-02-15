@@ -68,10 +68,6 @@ img {
 <h2>Loading and preprocessing the data</h2>
 <pre class="r"><code>unzip(&quot;activity.zip&quot;)
 activity &lt;- fread(&quot;activity.csv&quot;, sep = &quot;,&quot;, na.strings = &quot;NA&quot;)
-##activity &lt;- fread(&quot;data/activity.csv&quot;, sep = &quot;,&quot;, na.strings = &quot;NA&quot;)
-##file &lt;- unz(description = &quot;activity.zip&quot;, filename = &quot;activity.csv&quot;)
-##activity &lt;- fread(file, sep = &quot;,&quot;, na.strings = &quot;NA&quot;)
-##close(file)
 activity[, date := as.POSIXct(date)]</code></pre>
 </div>
 <div id="what-is-mean-total-number-of-steps-taken-per-day" class="section level2">
