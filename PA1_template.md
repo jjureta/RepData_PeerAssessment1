@@ -9,10 +9,6 @@
 ```r
 unzip("activity.zip")
 activity <- fread("activity.csv", sep = ",", na.strings = "NA")
-##activity <- fread("data/activity.csv", sep = ",", na.strings = "NA")
-##file <- unz(description = "activity.zip", filename = "activity.csv")
-##activity <- fread(file, sep = ",", na.strings = "NA")
-##close(file)
 activity[, date := as.POSIXct(date)]
 ```
 
