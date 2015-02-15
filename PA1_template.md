@@ -99,7 +99,8 @@ interval_steps_mean <- activity[, list(steps_mean = mean(steps, na.rm = TRUE)),
 
 ggplot( data = interval_steps_mean, aes( interval, steps_mean )) +  
       facet_grid(.  ~	weekday) + 
-      geom_line()
+      geom_line() +
+      ylab("mean value")
 ```
 
 ![](PA1_template_files/figure-html/weekday_pattern-1.png) 
